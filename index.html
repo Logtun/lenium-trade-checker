@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Is my trade allowed? · Lenium Trade Rule Checker</title>
+<meta name="description" content="Check a Lenium evaluation trade before you place it: the 20–80¢ price band, the 5% position cap, the 10% exposure cap, the 15% consistency rule and the fee. Fan-made, not official.">
+<meta name="theme-color" content="#0f1222">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Is my trade allowed? · Lenium Trade Rule Checker">
+<meta property="og:description" content="Price band, position and exposure caps, consistency rule and fee, checked before you trade. Fan-made, not official.">
+<meta property="og:image" content="og.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Lenium Trade Rule Checker: pass, warn or fail for each rule">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Is my trade allowed? · Lenium Trade Rule Checker">
+<meta name="twitter:description" content="Price band, position and exposure caps, consistency rule and fee, checked before you trade. Fan-made, not official.">
+<meta name="twitter:image" content="og.jpg?v=1">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="assets/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="https://www.lenium.capital/" target="_blank" rel="noopener" aria-label="Lenium">
+    <img src="assets/mark.png" alt="" width="32" height="32">
+    <img src="assets/word.png" alt="Lenium" class="word" height="22">
+  </a>
+  <span class="tag">Trade Checker</span>
+</header>
+
+<main class="wrap">
+  <p class="eyebrow">Fan-made · not official</p>
+  <h1>Is my trade <span class="accent">allowed?</span></h1>
+  <p class="lede">Enter a trade and see, rule by rule, whether it fits Lenium's evaluation rules before you place it.</p>
+
+  <div class="panel">
+    <h2>Your account</h2>
+    <div class="field">
+      <span class="flabel">Account size</span>
+      <div class="sizebtns" id="sizes">
+        <button class="chip" type="button" data-size="5000" aria-pressed="false">$5K</button>
+        <button class="chip" type="button" data-size="10000" aria-pressed="false">$10K</button>
+        <button class="chip" type="button" data-size="25000" aria-pressed="true">$25K</button>
+        <button class="chip" type="button" data-size="50000" aria-pressed="false">$50K</button>
+        <button class="chip" type="button" data-size="75000" aria-pressed="false">$75K</button>
+        <button class="chip" type="button" data-size="100000" aria-pressed="false">$100K</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="bal">Current balance</label>
+      <div class="inp"><span class="pre">$</span><input id="bal" type="number" inputmode="decimal" min="1" step="0.01" value="25000"></div>
+      <p class="hint">Starts at your account size. Change it if your balance has moved; the 5% and 10% caps use your current balance.</p>
+    </div>
+    <label class="check"><input type="checkbox" id="boost"><span>I have the Consistency boost add-on<small>Raises the per-market limit from 15% to 25% of the profit target (Pricing page).</small></span></label>
+  </div>
+
+  <div class="panel">
+    <h2>Your trade</h2>
+    <div class="field">
+      <span class="flabel">Side</span>
+      <div class="sides">
+        <button class="side-btn yes" id="sideYes" type="button" aria-pressed="true">YES</button>
+        <button class="side-btn no" id="sideNo" type="button" aria-pressed="false">NO</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="price">Entry price (what you pay for your side)</label>
+      <div class="inp"><input id="price" type="number" inputmode="numeric" min="1" max="99" step="1" value="45"><span class="suf">¢</span></div>
+      <input type="range" id="priceRange" min="1" max="99" step="1" value="45" aria-label="Entry price in cents">
+    </div>
+    <div class="field">
+      <span class="flabel">Size</span>
+      <div class="seg" id="mode">
+        <button type="button" data-mode="cts" aria-pressed="true">Contracts</button>
+        <button type="button" data-mode="usd" aria-pressed="false">$ amount</button>
+      </div>
+      <div class="inp"><span class="pre" id="qtyPre" hidden>$</span><input id="qty" type="number" inputmode="decimal" min="0" step="1" value="2000" aria-label="Number of contracts"><span class="suf" id="qtySuf">contracts</span></div>
+      <p class="hint" id="qtyHint"></p>
+    </div>
+    <div class="two">
+      <div class="field">
+        <label for="exp">Open exposure <span class="opt">optional</span></label>
+        <div class="inp"><span class="pre">$</span><input id="exp" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label for="mp">Profit in this market <span class="opt">optional</span></label>
+        <div class="inp"><span class="pre">$</span><input id="mp" type="number" inputmode="decimal" step="0.01" placeholder="0"></div>
+      </div>
+    </div>
+    <p class="hint">Open exposure: what your other open positions cost. Profit in this market: what you've made from this market so far.</p>
+  </div>
+
+  <div class="panel" id="result" aria-live="polite">
+    <div class="verdict" id="verdict"><div class="ic" id="vIc">✓</div><div><h2 id="vTitle">Allowed</h2><p id="vSub"></p></div></div>
+    <ul class="checks" id="checks"></ul>
+    <div class="res" style="margin-top:12px">
+      <div class="stat"><div class="k">Max contracts at this price</div><div class="v b" id="oMax">0</div><div class="s" id="oMaxS"></div></div>
+      <div class="stat"><div class="k">Fee for this trade</div><div class="v" id="oFee">$0.00</div><div class="s" id="oFeeS"></div></div>
+      <div class="stat"><div class="k">Cost of the contracts</div><div class="v" id="oCost">$0.00</div><div class="s" id="oCostS"></div></div>
+      <div class="stat"><div class="k">If it wins</div><div class="v g" id="oWin">+$0.00</div><div class="s" id="oWinS"></div></div>
+    </div>
+    <div class="unclear">
+      <b>What Lenium doesn't spell out</b>
+      <p>The Rules page says a position may not exceed 5% of your balance and that the "combined value" of open positions may not exceed 10%. It doesn't say whether that's the price you paid, the current market value, or whether fees count. This checker uses the cost at entry (contracts × price), which is also the most a position can lose. Check Lenium's Rules page if you're near a cap.</p>
+      <p>It also doesn't say whether an order over the caps is blocked or counted as a breach ("attempting to circumvent position size or exposure limits by any means" is a termination condition). Don't place one.</p>
+    </div>
+    <details>
+      <summary>How it's calculated</summary>
+      <div class="formula" id="formula"></div>
+    </details>
+    <p class="asof">Rules as read from lenium.capital on Oct 23, 2026 (Rules, Pricing and Tools pages). Evaluation accounts only; Instant and funded accounts have their own limits. Lenium's <a href="https://www.lenium.capital/rules" target="_blank" rel="noopener">Rules page</a> is the final word.</p>
+  </div>
+</main>
+
+<footer class="foot">
+  <p>Fan-made · Lenium accounts are simulated evaluation accounts · <a href="https://www.lenium.capital/" target="_blank" rel="noopener">lenium.capital</a></p>
+  <p>made by <a href="https://x.com/iamlogtun" target="_blank" rel="noopener">@iamlogtun</a> · not official</p>
+</footer>
+<script src="app.js?v=1"></script>
+</body>
+</html>
